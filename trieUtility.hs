@@ -1,10 +1,13 @@
-module TrieUtility 
+module Trie.TrieUtility (writeOutTrie,readInTrie)
  where
 
-import Trie
+import Trie.Trie
 import qualified Data.Map as Map
 import Data.Map ((!))
 import qualified Data.List as L
+import Data.Binary
+import Control.Monad
+import Codec.Compression.GZip
 
 data Dot = DotPath {fid::String, tid::String} | 
            DotNode{dotId::String,label::String}
@@ -33,3 +36,31 @@ generateDot nodeDatum path = myDotNode : myPaths ++ myChildrensDots
           generateChildrenDots (k,v) = generateDot v (k:path)
           
 generateDotPretty tree = L.intercalate "\n" $ map show  $ generateDot tree "_"
+
+
+writeOutTrie path b = do 
+  (encodeFile path . compress . encode)  b
+
+readInTrie path = do
+  ahhh <- fmap decompress $ decodeFile path
+  return (decode ahhh :: TrieNode Char)
+
+
+
+instance (Ord a, Binary a) => Binary (TrieNode a) where
+    put TrieNode{wordFragment=w,
+                 children=c,
+                 nodeType=t} = put (0::Word8) >> put w >> put c >> put t
+    get = do tag <- getWord8
+             case tag of
+               0 -> liftM3 TrieNode get get get
+
+instance Binary NodeType where
+    put Top = putWord8 0
+    put Word = putWord8 1
+    put NonWord = putWord8 2
+    get = do tag <- getWord8
+             case tag of
+                    0 -> return Top
+                    1 -> return Word
+                    2 -> return NonWord

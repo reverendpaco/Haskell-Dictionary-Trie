@@ -1,7 +1,7 @@
-module TrieTest
+module Trie.TrieTest
     where
-import TrieUtility
-import Trie
+import Trie.TrieUtility
+import Trie.Trie
 
 
 -- ttW1 =  (( "as", "aseed"),SourceIsSmallerDatum {pre = "as", suffixT = "eed"})
@@ -35,6 +35,7 @@ testWords = ["rebate",
 ----
 
     
+
 basicEnglishWords =["a",
               "able",
               "about",
@@ -45,6 +46,7 @@ basicEnglishWords =["a",
               "addition",
               "adjustment",
               "advertisement",
+              "advertisements",
               "after",
               "again",
               "against",

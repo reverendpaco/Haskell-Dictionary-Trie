@@ -1,6 +1,6 @@
-module Trie (NodeType(..),TrieNode(..),
+module Trie.Trie (NodeType(..),TrieNode(..),
              degenerateTree,addWordToTrie,
-             queryNode, queryNodeWithPath)
+             queryNode,isWord, isPrefix, queryNodeWithPath)
   where
 
 
@@ -8,6 +8,7 @@ import qualified Data.Map as Map
 import Data.Map ((!))
 import qualified Data.List as L
 
+data QueryMatchType = IsWord|IsPrefix|AintNothing deriving (Show)
 data NodeType = Top|Word|NonWord 
                 deriving (Show,Eq)
 data TrieNode a = TrieNode { wordFragment :: [a], children :: (Map.Map a (TrieNode a)), 
@@ -111,22 +112,32 @@ insertNode contextNode@TrieNode{children=childNodes,nodeType=oldNodeType}
           newSourceSuffixNode = wordNode sourceSuffix
           newTargetSuffixNode = contextNode{ wordFragment = targetSuffix}
 
-
+isWord node a = case queryNode a node of
+             IsWord -> True
+             otherwise -> False
+isPrefix node a = case queryNode a node of
+               IsPrefix -> True
+               otherwise -> False
 queryNode source node = bool
     where (bool,_) = queryNodeWithPath source node []
 
-queryNodeWithPath :: (Ord a) => [a] -> TrieNode a -> [[a]] -> (Bool,[[a]])
+
+traverseTrie source@(s:_)  node@TrieNode{ nodeType = Top, children=ch}
+    = 3
+
+queryNodeWithPath :: (Ord a) => [a] -> TrieNode a -> [[a]] -> (QueryMatchType,[[a]])
 queryNodeWithPath source@(s:_)  node@TrieNode{ nodeType = Top, children=ch} acc
           | Map.member s ch = queryNodeWithPath source (ch ! s) acc
-          | otherwise       = (False,acc)
+          | otherwise       = (AintNothing,acc)
 queryNodeWithPath source node@TrieNode{ wordFragment = target, nodeType=nT, children=ch } acc = case matchData of
                           ExactMatchDatum {shared=source} 
-                                          | nT == Word -> (True, (target:acc))
-                                          | otherwise  -> (False,acc)
+                                          | nT == Word -> (IsWord, (target:acc))
+                                          | otherwise  -> (IsPrefix,acc)
                           TargetIsSmallerDatum {suffixS= suffixStringOfSource@(s:_)}
                               | Map.member s ch -> queryNodeWithPath suffixStringOfSource (ch ! s) (target:acc )
-                              | otherwise  -> (False,acc)
-                          otherwise -> (False,acc)
+                              | otherwise  -> (AintNothing,acc)
+                          SourceIsSmallerDatum{} -> (IsPrefix, acc)
+                          otherwise -> (AintNothing,acc)
                         where matchData = source =><= target
 
 
