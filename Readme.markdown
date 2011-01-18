@@ -6,15 +6,16 @@
 * ghc --make WordServer.hs
 * ./WordServer  (listens on 9900)
 * (on another terminal)  telnet localhost 9900
-* type in letters "sdfoidsfuodsf" which will be wrapped into the closest approximate square, for example
+* type in letters "SERSPATGLINESERSOO" which will be wrapped into the closest approximate square, for example
 
-sdfoidsfuodsf ->
+SERSPATGLINESERSOO ->		
 
 <pre>
-s d f o
-i d s f
-u o d s
-f
+                S E R S
+		P A T G
+		L I N E
+		S E R S
+                O O
 </pre>
 
 * hit return
