@@ -10,11 +10,12 @@
 
 sdfoidsfuodsf ->
 
+<pre>
 s d f o
 i d s f
 u o d s
 f
-
+</pre>
 
 * hit return
 * watch as the words in this board are returned to you
