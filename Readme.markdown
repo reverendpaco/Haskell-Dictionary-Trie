@@ -12,9 +12,9 @@ SERSPATGLINESERSOO ->
 
 <pre>
                 S E R S
-		P A T G
-		L I N E
-		S E R S
+	        P A T G
+	        L I N E
+	        S E R S
                 O O
 </pre>
 
