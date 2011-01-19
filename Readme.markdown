@@ -9,7 +9,6 @@
 * type in letters "SERSPATGLINESERSOO" which will be wrapped into the closest approximate square, for example
 
 SERSPATGLINESERSOO ->		
-
 <pre>
                 S E R S
                 P A T G
@@ -17,6 +16,5 @@ SERSPATGLINESERSOO ->
                 S E R S
                 O O
 </pre>
-
 * hit return
 * watch as the words in this board are returned to you
