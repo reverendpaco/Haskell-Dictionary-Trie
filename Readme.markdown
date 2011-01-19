@@ -4,7 +4,7 @@
 * git clone git@github.com:reverendpaco/Haskell-Dictionary-Trie.git
 * cd ./Haskell-Dictionary-Trie/src
 
-# Either 
+# Either (Server Mode)
 * ghc --make WordServer.hs
 * ./WordServer  (listens on 9900)
 * (on another terminal)  telnet localhost 9900
@@ -21,7 +21,7 @@ SERSPATGLINESERSOO ->
 * hit return
 * watch as the words in this board are returned to you
 
-# Or 
+# Or (Command Line)
 * ghc --make WordSolver.hs
 * ./WorldSolver SERSPATGLINESERSOO
 * watch as the words in this board are printed out
