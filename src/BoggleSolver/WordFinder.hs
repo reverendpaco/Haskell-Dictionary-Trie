@@ -1,4 +1,4 @@
-module BoggleSolver.WordFinder ( doItAll, trie ) where
+module BoggleSolver.WordFinder ( ) where
 {- 
 Boggle Solver:
 * Identity
@@ -63,11 +63,13 @@ oneAway (x,y) (a,b) | dist > 0 && fdist <=1 && sdist <=1  = True
                           fdist = abs(x-a)
                           sdist = abs(y-b)
 
-convert (x,y,cs) = WNode {ident = (x,y), contents = cs}
+convert (x,y,cs) = WNode {ident       = (x,y), 
+                          contents    = cs, 
+                          multiplier  = 1}
 
 type Identity = (Int,Int)
 type Content = String
-data WNode = WNode { ident::Identity, contents:: Content } 
+data WNode = WNode { ident::Identity, contents:: Content, multiplier::Int } 
 type Relation  = (WNode, WNode)
 type Path = [WNode]
 type Board = ( [WNode], [Relation])
