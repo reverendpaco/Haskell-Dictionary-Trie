@@ -25,3 +25,10 @@ SERSPATGLINESERSOO ->
 * ghc --make WordSolver.hs
 * ./WorldSolver SERSPATGLINESERSOO
 * watch as the words in this board are printed out
+
+
+Ahh, more recent versions of the haskell platform hide the use of Data.Binary (which I use)
+* ghc Board.hs -package ghc-binary-0.5.0.2
+The above shows how you can specifically add the ghc package that containts Data.Binary
+
+I guess I must refactor this to use a non-internal module set.  So much to do.
