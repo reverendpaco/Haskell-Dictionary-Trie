@@ -1,4 +1,4 @@
-module BoggleSolver.WordFinder ( ) where
+module BoggleSolver.WordFinder  where
 {- 
 Boggle Solver:
 * Identity
@@ -40,32 +40,12 @@ import qualified Trie.Trie as T
 import Trie.TrieUtility
 import Data.Char
 import System.Environment 
-import Control.Parallel.Strategies
-import Control.Parallel
 import IO
 import Control.Exception hiding (catch)
 import Control.Concurrent
 import Network
 import System.Posix
 
-
-
-isInRelVar (x,y) m | (m==x) || (m==y) = True 
-isInRelVar _ _ = False
-           
-theOther (x,y) z | z==x = y    
-theOther (x,y) z | z==y = x
-
-x `neighbor` y =  ident y `oneAway` ident x
-oneAway (x,y) (a,b) | dist > 0 && fdist <=1 && sdist <=1  = True
-                    | otherwise = False
-                    where dist = fdist + sdist
-                          fdist = abs(x-a)
-                          sdist = abs(y-b)
-
-convert (x,y,cs) = WNode {ident       = (x,y), 
-                          contents    = cs, 
-                          multiplier  = 1}
 
 type Identity = (Int,Int)
 type Content = String
@@ -77,12 +57,39 @@ type Board = ( [WNode], [Relation])
 instance Eq WNode where
     node1 == node2 = (ident node1) == (ident node2)
 instance Show WNode where
-    show n = contents n
+    show n = contents n ++ show (ident n)
 
+
+isInRelVar (x,y) m | (m==x) || (m==y) = True 
+isInRelVar _ _ = False
+           
+theOther (x,y) z | z==x = y    
+theOther (x,y) z | z==y = x
+
+
+neighbor :: WNode -> WNode -> Bool
+x `neighbor` y =  ident y `oneAway` ident x
+
+oneAway :: (Num t, Ord t) => (t, t) -> (t, t) -> Bool
+oneAway (x,y) (a,b) | dist > 0 && fdist <=1 && sdist <=1  = True
+                    | otherwise = False
+                    where dist = fdist + sdist
+                          fdist = abs(x-a)
+                          sdist = abs(y-b)
+
+convert (x,y,cs) = WNode {ident       = (x,y), 
+                          contents    = cs, 
+                          multiplier  = 1}
+
+-- takes a list of WNodes with their coordinates-based identities (ident)
+-- and calculate the list of relations between them... a relation is a 
+-- 2-tuple with references to both WNodes in it
 generate (x:xs)  = rels : generate xs
     where rels = [(x,neighbors) | neighbors <- filter (neighbor x) xs]
 generate [] = []
 
+-- takes a single WNode and the list of all relations, and finds
+-- the WNodes that are all neighbors based on being one coordinate distance away
 neighbors :: WNode -> [Relation] -> [WNode]
 neighbors x rels =  map (`theOther` x) $ filter (`isInRelVar` x) rels
 
@@ -162,7 +169,7 @@ createBoard list =
         rels = concat $ generate nodes
     in (nodes,rels)
 
-mapP f xs = parBuffer 3 rwhnf $ map f xs
+-- mapP f xs = parBuffer 3 rwhnf $ map f xs
 
 {-
 
