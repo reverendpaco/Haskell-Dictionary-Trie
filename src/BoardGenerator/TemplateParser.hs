@@ -27,15 +27,16 @@ import System.Random
 --  t    n    r    c     e     o    c    e     c    q    p    o     y
 
 
--- The end of line character is \n
-eol :: GenParser Char st Char
-eol = char '\n'
-
 gameParser :: CharParser () [[WNode]]
 gameParser = sepBy dslLine eol
 
+simpleSpaces = (many (char ' '))
+
+newlines = (many1 newline)
+eol =  try newlines <|> do {newlines;simpleSpaces;newlines}
+
 dslLine :: CharParser () [WNode]
-dslLine = sepBy nodeP (char ' ')
+dslLine = many (do {simpleSpaces; r <- nodeP; simpleSpaces; return r})
 
 mult  = between (char '(') (char ')')
 
@@ -99,7 +100,29 @@ allOfIt inDSL =  do
           return (Right (nodes, wordsB))
       where allnodes = ((map genRandChar) . removeEmptyNodes . addDims) result
 
-                       
+
+runTests = mapM runTest ["c o w\no w l\nd o g",
+                         " c o w   \no w l\nd o g",
+                         " c o w   \no w l\nd o g\n",
+                         " c o w   \no w l\nd o g\n\n\n",
+                         " c o w\no w l\nd o g",
+                         " c   o  w\no w l\nd o g",
+                         "\n c o w   \no w l\nd o g\n\n\n",
+                         "\n c o w   \n\n\no w l\nd o g\n\n\n",
+                         "\n c o w   \n\n\no  w  l   \n d    o  g   \n\n\n",
+                         "\n c o w   \n\n  \no  w  l   \n d    o  g   \n\n\n"
+                        ]
+runTest testCase = do
+    result <- allOfIt testCase
+    case result of 
+      Left err ->
+          do 
+            putStrLn "Test Failure"
+            putStrLn (show err)
+      Right (_,words) -> do
+          -- mapM putStrLn words
+          putStrLn (show (words == corVal))
+        where corVal = ["cow","cowl","coo","cow","cowl","col","colog","coo","cool","cow","cowl","cod","coo","cool","ow","owl","oo","ow","owl","wo","woo","wood","wow","oo","ow","owl","od","oo","wo","wow","woo","wood","wo","woo","wool","woo","wool","wood","wo","woo","wood","wog","lo","loco","low","loo","low","lo","loo","low","lod","log","logwood","do","doc","doco","doo","dool","dow","dowl","doo","dool","do","doo","dow","dowl","dol","dog","oo","ow","owl","od","glow","glow","glow","go","goo","good","gowl","gowd","god"]
 
 
 -- oo = do 
