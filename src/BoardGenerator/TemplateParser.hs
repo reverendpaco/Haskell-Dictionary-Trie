@@ -49,7 +49,7 @@ nodeP =
         Just tipl ->
             return WNode { contents    = c, multiplier = C.digitToInt tipl}
         Nothing ->
-            return WNode { contents    = c }
+            return WNode { contents    = c , multiplier = 1}
   
 
 -- takes a string that represents a template for a board based on the language described
@@ -61,13 +61,13 @@ parseGameDSL input = parse gameParser "(unknown)" input
 
 -- addDims takes a 2-dimensional list of WNodes that do not yet have their identity assigned,
 -- and adds their identity based upon their place in the mulitdimensional array... indices
--- are 1-based
+-- are 0-based
 -- afterwards, since the implict dimensions of where WNodes has been captured implicily in 
 -- the ident field of the WNode record, we flatten the list to be one-dimensional
 addDims :: [[WNode]] -> [WNode]
 addDims nodes = concat withIdents  -- flattens a dimension
         where
-          withIdents = map (\(x,r) -> zipWith (\v c-> v{ident=(c,r)}) x [1..]) $ zip nodes [1..]
+          withIdents = map (\(x,r) -> zipWith (\v c-> v{ident=(c,r)}) x [0..]) $ zip nodes [0..]
 
 -- get rid of those nodes that have the "_" underscore character, as this is meant to represent
 -- a hole in the board
@@ -96,11 +96,13 @@ allOfIt inDSL =  do
           let rels = concat $ generate nodes
           t <- trie
           let wordsB = wordsOnBoard t (nodes,rels)
-          mapM putStrLn wordsB
+          -- mapM putStrLn wordsB
           -- mapM (putStrLn . show) nodes
           return (Right (nodes, wordsB))
       where allnodes = ((map genRandChar) . removeEmptyNodes . addDims) result
 
+
+simple = "c o w\no w l\nd o g"
 
 runTests = mapM runTest ["c o w\no w l\nd o g",
                          " c o w   \no w l\nd o g",
